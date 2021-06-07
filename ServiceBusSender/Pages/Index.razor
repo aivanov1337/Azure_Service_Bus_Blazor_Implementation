@@ -1,0 +1,35 @@
+﻿@page "/"
+@using ServiceBusShared.Models
+@using ServiceBusSender.Services
+@inject IQueueService queue
+
+
+Send a message to the Azure Service Bus Queue
+
+<EditForm Model="@message" OnValidSubmit="@PublishMessage">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="sender">Nickname</label>
+        <InputText id="sender" class="form-control" @bind-Value="message.Sender" />
+    </div>
+
+    <div class="form-group">
+        <label for="content">Content</label>
+        <InputText id="content" class="form-control" @bind-Value="message.Content" />
+    </div>
+
+    <button type="submit" class="btn btn-primary"> Send </button>
+
+</EditForm>
+
+@code{
+    private MessageModel message = new MessageModel();
+
+    private async Task PublishMessage()
+    {
+        await queue.SendMessageAsync(message, "messagequeue");
+        message = new MessageModel();
+    }
+}
